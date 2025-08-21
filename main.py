@@ -1,5 +1,5 @@
 import os
-import random
+import uuid
 
 import lighteval
 from lighteval.logging.evaluation_tracker import EvaluationTracker
@@ -33,7 +33,7 @@ def parse_args():
         "--seed",
         type=int,
         default=None,
-        help="Random seed; if not set, a random value is generated",
+        help="Random seed; if not set, a unique value is generated",
     )
     parser.add_argument("--max_new_tokens", type=int, default=32768)
     parser.add_argument("--max_model_length", type=int, default=None)
@@ -57,7 +57,7 @@ def parse_args():
 def main():
     start = datetime.now()
     args = parse_args()
-    seed = args.seed if args.seed is not None else random.randint(0, 2**32 - 1)
+    seed = args.seed if args.seed is not None else uuid.uuid4().int & 0xFFFFFFFF
     print(f"Using seed: {seed}")
     fs, output_dir = url_to_fs(args.output_dir)
 
