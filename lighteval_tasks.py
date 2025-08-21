@@ -14,7 +14,6 @@
 
 """Custom evaluation tasks for LightEval."""
 
-import random
 import json
 import os
 
