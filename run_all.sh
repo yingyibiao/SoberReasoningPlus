@@ -75,24 +75,7 @@ cd $LOCAL_DIR
 
 set -x
 
-SEEDS=(
-    0
-    # 1
-    # 2
-    # 3
-    # 4 
-    # 42 
-    # 100
-    # 110
-    # 123
-    # 666
-    # 888
-    # 911
-    # 999
-    # 1000
-    # 2025
-    # 2026 
-)
+NUM_RUNS=1
 
 TASKS=(
     "custom|aime24|0|0"
@@ -103,14 +86,13 @@ TASKS=(
     # "custom|minerva|0|0"
     # "custom|olympiadbench|0|0"
 )
-for SEED in "${SEEDS[@]}"; do
+for ((RUN=1; RUN<=NUM_RUNS; RUN++)); do
 for TASK in "${TASKS[@]}"; do
     python main.py \
         --model $MODEL \
         --task $TASK \
         --temperature $TEMP \
         --top_p $TOP_P \
-        --seed $SEED \
         --output_dir $OUTPUT_DIR \
         --max_new_tokens $MAX_TOKENS \
         --max_model_length $MAX_MODEL_LENGTH \
@@ -122,7 +104,7 @@ for TASK in "${TASKS[@]}"; do
         --max_num_batched_tokens $MAX_NUM_BATCHED_TOKENS \
         --tensor_parallel_size 4 \
         --pipeline_parallel_size 1 \
-        --data_parallel_size 1 
+        --data_parallel_size 1
 done
 done
 
