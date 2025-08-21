@@ -1,17 +1,16 @@
 import os
+import random
+
 import lighteval
-import torch
 from lighteval.logging.evaluation_tracker import EvaluationTracker
 from lighteval.models.vllm.vllm_model import VLLMModelConfig
 from lighteval.models.model_input import GenerationParameters
 from lighteval.pipeline import ParallelismManager, Pipeline, PipelineParameters
 from datetime import datetime
 import argparse
-import json
 from fsspec import url_to_fs
 
 __version__ = f"2.0_lighteval@{lighteval.__version__}"
-
 
 
 def parse_args():
@@ -30,7 +29,12 @@ def parse_args():
     parser.add_argument("--top_k", type=int, default=None)
     parser.add_argument("--repetition_penalty", type=float, default=None)
     parser.add_argument("--task", type=str, default="lighteval|aime24|0|0")
-    parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=None,
+        help="Random seed; if not set, a random value is generated",
+    )
     parser.add_argument("--max_new_tokens", type=int, default=32768)
     parser.add_argument("--max_model_length", type=int, default=None)
     parser.add_argument("--gpu_memory_utilization", type=float, default=0.95)
@@ -50,10 +54,36 @@ def parse_args():
     return parser.parse_args()
 
 
+def _collect_existing_seeds(fs, path):
+    existing = set()
+    if fs.exists(path):
+        for run in fs.ls(path):
+            name = os.path.basename(run.rstrip("/"))
+            try:
+                existing.add(int(name.split("-", 1)[0]))
+            except ValueError:
+                continue
+    return existing
+
+
+def _generate_unique_seed(fs, model_dir, requested_seed):
+    if requested_seed is not None:
+        return requested_seed
+    used = _collect_existing_seeds(fs, model_dir)
+    seed = random.randint(0, 2**32 - 1)
+    while seed in used:
+        seed = random.randint(0, 2**32 - 1)
+    return seed
+
+
 def main():
     start = datetime.now()
     args = parse_args()
     fs, output_dir = url_to_fs(args.output_dir)
+    model_folder_name = args.model.replace("/", "_")
+    model_dir = os.path.join(output_dir, model_folder_name)
+    seed = _generate_unique_seed(fs, model_dir, args.seed)
+    print(f"Using seed: {seed}")
 
     max_model_length = args.max_model_length
     if args.max_model_length is None:
@@ -64,17 +94,20 @@ def main():
         max_model_length = None
 
     # Create a meaningful run name based on parameters
-    model_folder_name = args.model.replace("/", "_")
-    run_name = f"{args.seed}-{args.temperature}-{args.top_p}-{args.dtype}-{args.max_num_seqs}-{args.max_num_batched_tokens}-{args.task.split('|')[1]}-{args.max_new_tokens}"
+    run_name = (
+        f"{seed}-{args.temperature}-{args.top_p}-{args.dtype}-"
+        f"{args.max_num_seqs}-{args.max_num_batched_tokens}-"
+        f"{args.task.split('|')[1]}-{args.max_new_tokens}"
+    )
     if max_model_length != args.max_new_tokens:
         run_name += f"-{max_model_length}"
     if not args.use_chat_template:
         run_name += "-nochat"
-    
+
     # Define the dedicated output directory for this specific run
     run_output_dir = os.path.join(output_dir, model_folder_name, run_name)
     fs.makedirs(run_output_dir, exist_ok=True)
-    
+
     # Check if results already exist in this dedicated directory
     fpath = os.path.join(run_output_dir, "summary.json")
     if fs.exists(fpath) and not args.overwrite:
@@ -107,7 +140,7 @@ def main():
     model_config = VLLMModelConfig(
         model_name=args.model,
         dtype=args.dtype,
-        seed=args.seed,
+        seed=seed,
         max_model_length=max_model_length,
         gpu_memory_utilization=args.gpu_memory_utilization,
         pipeline_parallel_size=args.pipeline_parallel_size,
@@ -117,7 +150,7 @@ def main():
         use_chat_template=args.use_chat_template,
         generation_parameters=GenerationParameters(
             max_new_tokens=args.max_new_tokens,
-            seed=args.seed,
+            seed=seed,
             temperature=args.temperature,
             top_p=args.top_p,
         ),
