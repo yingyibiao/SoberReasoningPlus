@@ -71,9 +71,12 @@ def main():
 
     # Create a meaningful run name based on parameters
     model_folder_name = args.model.replace("/", "_")
-    run_name = f"{seed}-{args.temperature}-{args.top_p}-{args.dtype}-{args.max_num_seqs}-{args.max_num_batched_tokens}-{args.task.split('|')[1]}-{args.max_new_tokens}"
-    if max_model_length != args.max_new_tokens:
-        run_name += f"-{max_model_length}"
+    run_name = (
+        f"{seed}-{args.temperature}-{args.top_p}-{args.dtype}-"
+        f"{args.tensor_parallel_size}-{args.max_num_seqs}-"
+        f"{args.max_num_batched_tokens}-{args.task.split('|')[1]}-"
+        f"{args.max_new_tokens}-{max_model_length}"
+    )
     if not args.use_chat_template:
         run_name += "-nochat"
 
