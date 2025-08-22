@@ -18,7 +18,7 @@ import json
 import os
 
 from lighteval.metrics.dynamic_metrics import multilingual_extractive_match_metric
-from lighteval.metrics.utils.extractive_match_utils import ( 
+from lighteval.metrics.utils.extractive_match_utils import (
     ExprExtractionConfig,
     LatexExtractionConfig,
 )
@@ -42,7 +42,10 @@ latex_gold_metric = multilingual_extractive_match_metric(
     precision=5,
     gold_extraction_target=(LatexExtractionConfig(),),
     # Match boxed first before trying other regexes
-    pred_extraction_target=(ExprExtractionConfig(), LatexExtractionConfig(boxed_match_priority=0)),
+    pred_extraction_target=(
+        ExprExtractionConfig(),
+        LatexExtractionConfig(boxed_match_priority=0),
+    ),
     aggregation_function=max,
 )
 
@@ -52,7 +55,10 @@ expr_gold_metric = multilingual_extractive_match_metric(
     precision=5,
     gold_extraction_target=(ExprExtractionConfig(),),
     # Match boxed first before trying other regexes
-    pred_extraction_target=(ExprExtractionConfig(), LatexExtractionConfig(boxed_match_priority=0)),
+    pred_extraction_target=(
+        ExprExtractionConfig(),
+        LatexExtractionConfig(boxed_match_priority=0),
+    ),
     aggregation_function=max,
 )
 
@@ -100,7 +106,6 @@ def olympiadbench_prompt_fn(line, task_name: str = None):
         choices=[line["answer"]],
         gold_index=0,
     )
-
 
 
 # Define tasks
