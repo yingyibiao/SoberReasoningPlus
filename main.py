@@ -1,149 +1,150 @@
-import os
-import uuid
+"""Entry point for running evaluation sweeps with a single vLLM instance.
 
-import lighteval
-from lighteval.logging.evaluation_tracker import EvaluationTracker
-from lighteval.models.vllm.vllm_model import VLLMModelConfig
-from lighteval.models.model_input import GenerationParameters
-from lighteval.pipeline import ParallelismManager, Pipeline, PipelineParameters
-from datetime import datetime
+This script initialises the vLLM model once and then iterates over a list of
+sampling parameter combinations (temperature, top-p …) to run multiple
+evaluations without repeatedly spawning Python processes.  The heavy
+initialisation cost of `LLM` is therefore amortised across all experiments.
+
+Only arguments that require re‑initialising the model (model path, tensor
+parallel size, dtype …) are exposed via the command line.  Parameters that can
+be changed between requests (temperature, top_p, number of runs …) are supplied
+from the shell script and applied during the sweep.
+"""
+
+from __future__ import annotations
+
 import argparse
-from fsspec import url_to_fs
+import json
+from pathlib import Path
+from typing import Dict, List
 
-__version__ = f"2.0_lighteval@{lighteval.__version__}"
+from lm_eval import evaluator
+from lm_eval.models.vllm_causallms import VLLM
+from vllm import LLM
+
+# ---------------------------------------------------------------------------
+# argument parsing
+# ---------------------------------------------------------------------------
 
 
-def parse_args():
-    parser = argparse.ArgumentParser()
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Run evaluation sweep")
+    parser.add_argument("--model", "-m", type=str, default="Qwen/Qwen3-1.7B")
+    parser.add_argument("--tensor_parallel_size", "-tp", type=int, default=1)
+    parser.add_argument("--dtype", type=str, default="bfloat16")
+    parser.add_argument(
+        "--tasks",
+        type=str,
+        default="aime24,aime25,amc23,minerva,olympiadbench,math_500",
+        help="Comma separated list of evaluation tasks",
+    )
+    parser.add_argument("--batch_size", type=int, default=16)
+    parser.add_argument("--limit", type=int, default=100, help="Limit samples")
     parser.add_argument(
         "--output_dir",
-        default="output",
         type=str,
-        help="Directory to save the output files",
+        default="output",
+        help="Where to store result JSON files",
     )
     parser.add_argument(
-        "--model", type=str, default="deepseek-ai/DeepSeek-R1-Distill-Qwen-7B"
-    )
-    parser.add_argument("--temperature", type=float, default=0.8)
-    parser.add_argument("--top_p", type=float, default=0.9)
-    parser.add_argument("--top_k", type=int, default=None)
-    parser.add_argument("--repetition_penalty", type=float, default=None)
-    parser.add_argument("--task", type=str, default="lighteval|aime24|0|0")
-    parser.add_argument(
-        "--seed",
+        "--max_tokens",
         type=int,
-        default=None,
-        help="Random seed; if not set, a unique value is generated",
+        default=256,
+        help="Maximum number of tokens to generate per example",
     )
-    parser.add_argument("--max_new_tokens", type=int, default=32768)
-    parser.add_argument("--max_model_length", type=int, default=None)
-    parser.add_argument("--gpu_memory_utilization", type=float, default=0.95)
-    parser.add_argument("--dtype", type=str, default="bfloat16")
-    parser.add_argument("--cot_prompt", type=str, default=None)
-    parser.add_argument("--system_prompt", type=str, default=None)
-    parser.add_argument("--custom_tasks_directory", type=str, default=None)
-    parser.add_argument("--overwrite", action="store_true")
-    parser.add_argument("--launcher_type", type=str, default="VLLM")
-    parser.add_argument("--pipeline_parallel_size", type=int, default=1)
-    parser.add_argument("--data_parallel_size", type=int, default=1)
-    parser.add_argument("--tensor_parallel_size", type=int, default=1)
-    parser.add_argument("--max_num_seqs", type=int, default=128)
-    parser.add_argument("--max_num_batched_tokens", type=int, default=32768)
-    parser.add_argument("--use_chat_template", action="store_true")
-
+    parser.add_argument(
+        "--temperatures",
+        type=float,
+        nargs="+",
+        default=[0.0, 0.6, 0.8, 0.9, 1.0],
+        help="List of temperatures to sweep over",
+    )
+    parser.add_argument(
+        "--top_ps",
+        type=float,
+        nargs="+",
+        default=[0.6, 0.8, 0.9, 0.95, 1.0],
+        help="List of top-p values to sweep over",
+    )
+    parser.add_argument(
+        "--num_runs",
+        type=int,
+        default=1,
+        help="Number of runs to repeat for each parameter combination",
+    )
     return parser.parse_args()
 
 
-def main():
-    start = datetime.now()
+# ---------------------------------------------------------------------------
+# main sweep logic
+# ---------------------------------------------------------------------------
+
+
+def main() -> None:
     args = parse_args()
-    seed = args.seed if args.seed is not None else uuid.uuid4().int & 0xFFFFFFFF
-    print(f"Using seed: {seed}")
-    fs, output_dir = url_to_fs(args.output_dir)
 
-    max_model_length = args.max_model_length
-    if args.max_model_length is None:
-        print("max_model_length not set. Setting it to max_new_tokens.")
-        max_model_length = args.max_new_tokens
-    elif args.max_model_length == -1:
-        print("max_model_length is -1. Setting it to None.")
-        max_model_length = None
-
-    # Create a meaningful run name based on parameters
-    model_folder_name = args.model.replace("/", "_")
-    run_name = (
-        f"{seed}-{args.temperature}-{args.top_p}-{args.dtype}-"
-        f"{args.tensor_parallel_size}-{args.max_num_seqs}-"
-        f"{args.max_num_batched_tokens}-{args.task.split('|')[1]}-"
-        f"{args.max_new_tokens}-{max_model_length}"
-    )
-    if not args.use_chat_template:
-        run_name += "-nochat"
-
-    # Define the dedicated output directory for this specific run
-    run_output_dir = os.path.join(output_dir, model_folder_name, run_name)
-    fs.makedirs(run_output_dir, exist_ok=True)
-
-    # Check if results already exist in this dedicated directory
-    fpath = os.path.join(run_output_dir, "summary.json")
-    if fs.exists(fpath) and not args.overwrite:
-        print(f"File {fpath} already exists. Skipping.")
-        return
-
-    evaluation_tracker = EvaluationTracker(
-        output_dir=run_output_dir,  # Now using the run-specific output directory
-        save_details=True,
-        push_to_hub=False,
-        push_to_tensorboard=False,
-        public=False,
-        hub_results_org=None,
-    )
-    # assert args.launcher_type == "VLLM", "Only VLLM is supported for now"
-    pipeline_params = PipelineParameters(
-        launcher_type=ParallelismManager.VLLM,
-        job_id=0,
-        dataset_loading_processes=1,
-        custom_tasks_directory=args.custom_tasks_directory,
-        # override_batch_size=-1,  # Cannot override batch size when using VLLM
-        num_fewshot_seeds=1,
-        max_samples=None,
-        use_chat_template=args.use_chat_template,
-        system_prompt=args.system_prompt,
-        cot_prompt=args.cot_prompt,
-        load_responses_from_details_date_id=None,
-    )
-
-    model_config = VLLMModelConfig(
-        model_name=args.model,
-        dtype=args.dtype,
-        seed=seed,
-        max_model_length=max_model_length,
-        gpu_memory_utilization=args.gpu_memory_utilization,
-        pipeline_parallel_size=args.pipeline_parallel_size,
+    # ------------------------------------------------------------------
+    # Initialise vLLM once
+    # ------------------------------------------------------------------
+    print("Initialising vLLM…")
+    llm = LLM(
+        model=args.model,
         tensor_parallel_size=args.tensor_parallel_size,
-        max_num_seqs=args.max_num_seqs,
-        max_num_batched_tokens=args.max_num_batched_tokens,
-        use_chat_template=args.use_chat_template,
-        generation_parameters=GenerationParameters(
-            max_new_tokens=args.max_new_tokens,
-            seed=seed,
-            temperature=args.temperature,
-            top_p=args.top_p,
-        ),
+        trust_remote_code=True,
+        dtype=args.dtype,
     )
+    print("vLLM initialised.")
 
-    pipeline = Pipeline(
-        tasks=args.task,
-        pipeline_parameters=pipeline_params,
-        evaluation_tracker=evaluation_tracker,
-        model_config=model_config,
-        metric_options={},
-    )
+    # ------------------------------------------------------------------
+    # Build the list of sampling parameter combinations to evaluate
+    # ------------------------------------------------------------------
+    temperatures: List[float] = args.temperatures
+    top_ps: List[float] = args.top_ps
+    param_combinations: List[Dict[str, float]] = [
+        {"temperature": t, "top_p": p} for t in temperatures for p in top_ps
+    ]
 
-    pipeline.evaluate()
-    pipeline.show_results()
-    pipeline.save_and_push_results()
+    tasks = [t.strip() for t in args.tasks.split(",") if t.strip()]
+    output_dir = Path(args.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # ------------------------------------------------------------------
+    # Run evaluation for each parameter combination
+    # ------------------------------------------------------------------
+    for combo in param_combinations:
+        temp = combo["temperature"]
+        top_p = combo["top_p"]
+        for run_idx in range(args.num_runs):
+            print(
+                f"\n--- Evaluating temperature={temp} top_p={top_p} run={run_idx} ---"
+            )
+
+            vllm_model = VLLM(
+                llm=llm,
+                batch_size=args.batch_size,
+                temperature=temp,
+                top_p=top_p,
+                max_gen_toks=args.max_tokens,
+            )
+
+            results = evaluator.simple_evaluate(
+                model=vllm_model,
+                tasks=tasks,
+                batch_size=args.batch_size,
+                limit=args.limit,
+                log_samples=False,
+                seed=run_idx,
+            )
+
+            dumped = json.dumps(results, indent=2)
+            filename = (
+                output_dir / f"results_temp{temp}_topp{top_p}_run{run_idx}.json"
+            )
+            with filename.open("w") as f:
+                f.write(dumped)
+            print(f"Results saved to {filename}")
 
 
 if __name__ == "__main__":
     main()
+
