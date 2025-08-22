@@ -86,7 +86,8 @@ TASKS=(
     # "custom|minerva|0|0"
     # "custom|olympiadbench|0|0"
 )
-for ((RUN=1; RUN<=NUM_RUNS; RUN++)); do
+for ((RUN=0; RUN<NUM_RUNS; RUN++)); do
+SEED=$((RANDOM % NUM_RUNS))
 for TASK in "${TASKS[@]}"; do
     python main.py \
         --model $MODEL \
@@ -104,7 +105,8 @@ for TASK in "${TASKS[@]}"; do
         --max_num_batched_tokens $MAX_NUM_BATCHED_TOKENS \
         --tensor_parallel_size 4 \
         --pipeline_parallel_size 1 \
-        --data_parallel_size 1
+        --data_parallel_size 1 \
+        --seed $SEED
 done
 done
 

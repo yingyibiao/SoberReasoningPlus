@@ -215,21 +215,25 @@ def process_experiment(exp_path, tokenizer):
         temperature = config_parts[1]
         top_p = config_parts[2]
         dtype = config_parts[3]
-        max_num_seqs = config_parts[4]
-        max_num_batched_tokens = config_parts[5]
-        dataset = config_parts[6]
-        max_model_length = config_parts[7]
+        tensor_parallel_size = config_parts[4]
+        max_num_seqs = config_parts[5]
+        max_num_batched_tokens = config_parts[6]
+        dataset = config_parts[7]
+        max_new_tokens = config_parts[8]
+        max_model_length = config_parts[9]
     except (IndexError, ValueError):
         (
             seed,
             temperature,
             top_p,
             dtype,
+            tensor_parallel_size,
             max_num_seqs,
             max_num_batched_tokens,
             dataset,
+            max_new_tokens,
             max_model_length,
-        ) = ("unknown",) * 8
+        ) = ("unknown",) * 10
         logging.warning(
             f"Could not parse configuration from directory name: {exp_name}"
         )
@@ -250,9 +254,11 @@ def process_experiment(exp_path, tokenizer):
             "temperature": temperature,
             "top_p": top_p,
             "dtype": dtype,
+            "tensor_parallel_size": tensor_parallel_size,
             "max_num_seqs": max_num_seqs,
             "max_num_batched_tokens": max_num_batched_tokens,
             "dataset": dataset,
+            "max_new_tokens": max_new_tokens,
             "max_model_length": max_model_length,
         },
         "results": {},

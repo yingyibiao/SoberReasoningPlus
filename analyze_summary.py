@@ -167,15 +167,17 @@ def analyze_by_config(data):
             temp = exp_data["configuration"]["temperature"]
             top_p = exp_data["configuration"]["top_p"]
             dtype = exp_data["configuration"]["dtype"]
+            tensor_parallel_size = exp_data["configuration"]["tensor_parallel_size"]
             max_num_seqs = exp_data["configuration"]["max_num_seqs"]
             max_num_batched_tokens = exp_data["configuration"]["max_num_batched_tokens"]
             dataset = exp_data["configuration"]["dataset"]
+            max_new_tokens = exp_data["configuration"]["max_new_tokens"]
             max_model_length = exp_data["configuration"]["max_model_length"]
 
             # Create a configuration key
             config_key = (
-                f"temp_{temp}_topp_{top_p}_dtype_{dtype}_seqs_{max_num_seqs}_"
-                f"tokens_{max_num_batched_tokens}_dataset_{dataset}_len_{max_model_length}"
+                f"temp_{temp}_topp_{top_p}_dtype_{dtype}_tp_{tensor_parallel_size}_seqs_{max_num_seqs}_"
+                f"tokens_{max_num_batched_tokens}_dataset_{dataset}_new_{max_new_tokens}_len_{max_model_length}"
             )
 
             config_experiments[config_key].append(exp_data)
@@ -192,9 +194,11 @@ def analyze_by_config(data):
         temp = first_exp["configuration"]["temperature"]
         top_p = first_exp["configuration"]["top_p"]
         dtype = first_exp["configuration"]["dtype"]
+        tensor_parallel_size = first_exp["configuration"]["tensor_parallel_size"]
         max_num_seqs = first_exp["configuration"]["max_num_seqs"]
         max_num_batched_tokens = first_exp["configuration"]["max_num_batched_tokens"]
         dataset = first_exp["configuration"]["dataset"]
+        max_new_tokens = first_exp["configuration"]["max_new_tokens"]
         max_model_length = first_exp["configuration"]["max_model_length"]
 
         # Extract metrics from all experiments with this configuration
@@ -246,9 +250,11 @@ def analyze_by_config(data):
                 "temperature": temp,
                 "top_p": top_p,
                 "dtype": dtype,
+                "tensor_parallel_size": tensor_parallel_size,
                 "max_num_seqs": max_num_seqs,
                 "max_num_batched_tokens": max_num_batched_tokens,
                 "dataset": dataset,
+                "max_new_tokens": max_new_tokens,
                 "max_model_length": max_model_length,
             },
             "results": {
@@ -322,11 +328,15 @@ def main():
                     "temperature": data["configuration"]["temperature"],
                     "top_p": data["configuration"]["top_p"],
                     "dtype": data["configuration"]["dtype"],
+                    "tensor_parallel_size": data["configuration"][
+                        "tensor_parallel_size"
+                    ],
                     "max_num_seqs": data["configuration"]["max_num_seqs"],
                     "max_num_batched_tokens": data["configuration"][
                         "max_num_batched_tokens"
                     ],
                     "dataset": data["configuration"]["dataset"],
+                    "max_new_tokens": data["configuration"]["max_new_tokens"],
                     "max_model_length": data["configuration"]["max_model_length"],
                     "accuracy": data["results"]["accuracy"],
                     "accuracy_std_dev": data["results"]["accuracy_std_dev"],
