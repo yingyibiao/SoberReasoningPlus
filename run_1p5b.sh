@@ -22,7 +22,7 @@ unset VLLM_ATTENTION_BACKEND  # 后端默认 unset，按 dtype 动态设置
 # 目录配置
 # -------------------------
 readonly LOCAL_DIR="/code-fsx/yibiaoy-sandbox/SoberReasoningPlus"
-readonly OUTPUT_DIR="$LOCAL_DIR/output"
+readonly OUTPUT_DIR="$LOCAL_DIR/outputs"
 readonly LOG_ROOT="$OUTPUT_DIR/logs"
 
 mkdir -p "$OUTPUT_DIR" "$LOG_ROOT"
@@ -56,25 +56,23 @@ fi
 # Sweep 配置
 # -------------------------
 MODELS=(
-  # "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B"
-  "Qwen/Qwen3-1.7B"
+  "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
 )
 
 TOP_PS=(
-  # 0.6
-  # 0.8
-  # 0.9
-  # 0.95
+  0.6
+  0.8
+  0.9
+  0.95
   1.0
 )
 
 TEMPS=(
-  # 0.0
-  # 0.4
-  # 0.6
-  # 0.7
-  # 0.8
-  # 0.9
+  0.0
+  0.6
+  0.7
+  0.8
+  0.9
   1.0
 )
 
@@ -85,14 +83,14 @@ DTYPES=(
 
 MAX_MODEL_LENGTHS=(
   34816
-  # 18432
-  # 10240
+  18432
+  10240
 )
 
 MAX_TOKENS_LIST=(
   32768
-  # 16384
-  # 8192
+  16384
+  8192
 )
 
 readonly MAX_NUM_SEQS=128
@@ -117,21 +115,21 @@ fi
 # 任务与 seeds
 # -------------------------
 declare -A TASK_SEEDS=(
-  ["math_500"]=2
-  ["aime24"]=2
+  ["aime24"]=32
   ["aime25"]=32
   ["amc23"]=32
   ["minerva"]=10
   ["olympiadbench"]=10
+  ["math_500"]=10
 )
 
 TASK_NAMES=(
   "aime24"
-  # "aime25"
-  # "amc23"
-  # "math_500"
-  # "minerva"
-  # "olympiadbench"
+  "aime25"
+  "amc23"
+  "math_500"
+  "minerva"
+  "olympiadbench"
   # "gpqa:diamond"
 )
 
@@ -286,7 +284,7 @@ if (( ${#MAX_MODEL_LENGTHS[@]} != ${#MAX_TOKENS_LIST[@]} )); then
 fi
 
 # 额外校验：自定义任务文件存在且含 TASKS_TABLE（轻量正则）
-CUSTOM_TASK_FILE="$LOCAL_DIR/lighteval_tasks.py"                   # <<< changed
+CUSTOM_TASK_FILE="$LOCAL_DIR/lighteval_tasks.py"
 if [[ ! -f "$CUSTOM_TASK_FILE" ]]; then
   echo "[FATAL] 未找到自定义任务文件：$CUSTOM_TASK_FILE" >&2
   exit 1
