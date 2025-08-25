@@ -28,13 +28,10 @@ from lighteval.utils.language import Language
 
 
 # Load prompts from the JSON file
-PROMPTS_PATH = os.environ.get("PROMPTS_PATH")
-if PROMPTS_PATH is None:
-    raise ValueError("PROMPTS_PATH environment variable not set.")
-with open(PROMPTS_PATH, "r") as f:
-    PROMPTS = json.load(f)
-
-MATH_QUERY_TEMPLATE = PROMPTS["MATH_QUERY_TEMPLATE"].strip()
+MATH_QUERY_TEMPLATE = os.environ.get("MATH_QUERY_TEMPLATE")
+if MATH_QUERY_TEMPLATE is None:
+    raise ValueError("MATH_QUERY_TEMPLATE environment variable not set.")
+MATH_QUERY_TEMPLATE = MATH_QUERY_TEMPLATE.strip()
 
 latex_gold_metric = multilingual_extractive_match_metric(
     language=Language.ENGLISH,

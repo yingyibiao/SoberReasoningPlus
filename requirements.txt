@@ -1,3 +1,4 @@
+pip3 install --no-cache-dir upgrade pip
 pip3 install --no-cache-dir torch==2.7.0 torchvision==0.22.0 torchaudio==2.7.0 --index-url https://download.pytorch.org/whl/cu126
 pip3 install --no-cache-dir vllm==0.9.2
 pip3 install --no-cache-dir opencv-python-headless==4.11.0.86 latex2sympy2_extended==1.0.6
