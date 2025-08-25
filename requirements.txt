@@ -7,5 +7,4 @@ pip3 install --no-cache-dir math-verify==0.5.2
 pip3 install --no-cache-dir fsspec==2025.3.0 s3fs==2025.3.0 datasets==3.6.0
 pip3 install --no-cache-dir more-itertools
 pip3 install --no-cache-dir flashinfer-python==0.2.13
-pip3 install --no-cache-dir lighteval==0.9.2
 pip3 install --no-cache-dir transformers==4.53.3
