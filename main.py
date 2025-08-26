@@ -1,48 +1,44 @@
 import os
-import uuid
 
 import lighteval
 from lighteval.logging.evaluation_tracker import EvaluationTracker
+from lighteval.models.model_loader import load_model
 from lighteval.models.vllm.vllm_model import VLLMModelConfig
 from lighteval.models.model_input import GenerationParameters
-from lighteval.pipeline import ParallelismManager, Pipeline, PipelineParameters
+from lighteval.pipeline import Pipeline, PipelineParameters, ParallelismManager
 from datetime import datetime
 import argparse
+import logging
 from fsspec import url_to_fs
+import asyncio
 
 __version__ = f"2.0_lighteval@{lighteval.__version__}"
+
+logger = logging.getLogger(__name__)
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--output_dir",
-        default="output",
-        type=str,
-        help="Directory to save the output files",
-    )
-    parser.add_argument(
-        "--model", type=str, default="deepseek-ai/DeepSeek-R1-Distill-Qwen-7B"
-    )
-    parser.add_argument("--temperature", type=float, default=0.8)
-    parser.add_argument("--top_p", type=float, default=0.9)
-    parser.add_argument("--top_k", type=int, default=None)
-    parser.add_argument("--repetition_penalty", type=float, default=None)
-    parser.add_argument("--task", type=str, default="lighteval|aime24|0|0")
-    parser.add_argument(
-        "--seed",
-        type=int,
-        default=None,
-        help="Random seed; if not set, a unique value is generated",
-    )
+    
+    # I/O and General Parameters
+    parser.add_argument("--output_dir", default="output", type=str, help="Directory to save the output files")
+    parser.add_argument("--model", type=str, default="deepseek-ai/DeepSeek-R1-Distill-Qwen-7B")
+    parser.add_argument("--task", type=str, nargs='+', required=True, help="List of tasks for evaluation")
+    parser.add_argument("--custom_tasks_directory", type=str, default=None)
+    parser.add_argument("--overwrite", action="store_true")
+
+    # Sampling Parameters
+    parser.add_argument("--temperature", type=float, nargs='+', required=True)
+    parser.add_argument("--top_p", type=float, nargs='+', required=True)
+    parser.add_argument("--seed", type=int, nargs='+', required=True, help="List of random seeds for each run")
     parser.add_argument("--max_new_tokens", type=int, default=32768)
+
+    # Model Configuration Parameters
     parser.add_argument("--max_model_length", type=int, default=None)
     parser.add_argument("--gpu_memory_utilization", type=float, default=0.95)
     parser.add_argument("--dtype", type=str, default="bfloat16")
     parser.add_argument("--cot_prompt", type=str, default=None)
     parser.add_argument("--system_prompt", type=str, default=None)
-    parser.add_argument("--custom_tasks_directory", type=str, default=None)
-    parser.add_argument("--overwrite", action="store_true")
     parser.add_argument("--launcher_type", type=str, default="VLLM")
     parser.add_argument("--pipeline_parallel_size", type=int, default=1)
     parser.add_argument("--data_parallel_size", type=int, default=1)
@@ -57,8 +53,6 @@ def parse_args():
 def main():
     start = datetime.now()
     args = parse_args()
-    seed = args.seed if args.seed is not None else uuid.uuid4().int & 0xFFFFFFFF
-    print(f"Using seed: {seed}")
     fs, output_dir = url_to_fs(args.output_dir)
 
     max_model_length = args.max_model_length
@@ -69,54 +63,11 @@ def main():
         print("max_model_length is -1. Setting it to None.")
         max_model_length = None
 
-    # Create a meaningful run name based on parameters
-    model_folder_name = args.model.replace("/", "_")
-    run_name = (
-        f"{seed}-{args.temperature}-{args.top_p}-{args.dtype}-"
-        f"{args.tensor_parallel_size}-{args.max_num_seqs}-"
-        f"{args.max_num_batched_tokens}-{args.task.split('|')[1]}-"
-        f"{args.max_new_tokens}-{max_model_length}"
-    )
-    if not args.use_chat_template:
-        run_name += "-nochat"
-
-    # Define the dedicated output directory for this specific run
-    run_output_dir = os.path.join(output_dir, model_folder_name, run_name)
-    fs.makedirs(run_output_dir, exist_ok=True)
-
-    # Check if results already exist in this dedicated directory
-    fpath = os.path.join(run_output_dir, "summary.json")
-    if fs.exists(fpath) and not args.overwrite:
-        print(f"File {fpath} already exists. Skipping.")
-        return
-
-    evaluation_tracker = EvaluationTracker(
-        output_dir=run_output_dir,  # Now using the run-specific output directory
-        save_details=True,
-        push_to_hub=False,
-        push_to_tensorboard=False,
-        public=False,
-        hub_results_org=None,
-    )
-    # assert args.launcher_type == "VLLM", "Only VLLM is supported for now"
-    pipeline_params = PipelineParameters(
-        launcher_type=ParallelismManager.VLLM,
-        job_id=0,
-        dataset_loading_processes=1,
-        custom_tasks_directory=args.custom_tasks_directory,
-        # override_batch_size=-1,  # Cannot override batch size when using VLLM
-        num_fewshot_seeds=1,
-        max_samples=None,
-        use_chat_template=args.use_chat_template,
-        system_prompt=args.system_prompt,
-        cot_prompt=args.cot_prompt,
-        load_responses_from_details_date_id=None,
-    )
-
+    # Load the model once
     model_config = VLLMModelConfig(
         model_name=args.model,
         dtype=args.dtype,
-        seed=seed,
+        seed=42,
         max_model_length=max_model_length,
         gpu_memory_utilization=args.gpu_memory_utilization,
         pipeline_parallel_size=args.pipeline_parallel_size,
@@ -126,23 +77,85 @@ def main():
         use_chat_template=args.use_chat_template,
         generation_parameters=GenerationParameters(
             max_new_tokens=args.max_new_tokens,
-            seed=seed,
-            temperature=args.temperature,
-            top_p=args.top_p,
         ),
     )
+    model = load_model(config=model_config)
 
-    pipeline = Pipeline(
-        tasks=args.task,
-        pipeline_parameters=pipeline_params,
-        evaluation_tracker=evaluation_tracker,
-        model_config=model_config,
-        metric_options={},
-    )
+    print(args.temperature, args.top_p, args.seed)
+    print(args.temperature.__class__, args.top_p.__class__, args.seed.__class__)
+    for temp in args.temperature:
+        for top_p in args.top_p:
+            for task in args.task:
+                print(f"Running evaluation for task: {task}, temperature: {temp}, top_p: {top_p}")
+                for seed in args.seed:
+                    print(f"\n---> Starting run: seed={seed}")
 
-    pipeline.evaluate()
-    pipeline.show_results()
-    pipeline.save_and_push_results()
+                    # Create a meaningful run name based on parameters
+                    model_folder_name = args.model.replace("/", "-")
+                    run_name = (
+                        f"{seed}-{temp}-{top_p}-{task.split('|')[1]}-{args.dtype}-"
+                        f"{args.tensor_parallel_size}-{args.max_num_seqs}-"
+                        f"{args.max_num_batched_tokens}-"
+                        f"{args.max_new_tokens}-{max_model_length}"
+                    )
+                    if not args.use_chat_template:
+                        run_name += "-nochat"
+
+                    # Define the dedicated output directory for this specific run
+                    run_output_dir = os.path.join(output_dir, model_folder_name, run_name)
+
+                    # Check for existing results to allow for resuming runs
+                    if not args.overwrite and fs.exists(run_output_dir):
+                        json_files = fs.glob(os.path.join(run_output_dir, "**", "*.json"))
+                        parquet_files = fs.glob(os.path.join(run_output_dir, "**", "*.parquet"))
+                        if json_files and parquet_files:
+                            print(f"Skipping run, results found in {run_output_dir}")
+                            continue
+                        else:
+                            print(f"Incomplete run found in {run_output_dir}. Deleting and re-running.")
+                            fs.rm(run_output_dir, recursive=True)
+                    
+                    fs.makedirs(run_output_dir, exist_ok=True)
+
+                    evaluation_tracker = EvaluationTracker(
+                        output_dir=run_output_dir,  # Now using the run-specific output directory
+                        save_details=True,
+                        push_to_hub=False,
+                        push_to_tensorboard=False,
+                        public=False,
+                        hub_results_org=None,
+                    )
+
+                    pipeline_params = PipelineParameters(
+                        launcher_type=ParallelismManager.VLLM,
+                        job_id=0,
+                        dataset_loading_processes=1,
+                        custom_tasks_directory=args.custom_tasks_directory,
+                        num_fewshot_seeds=1,
+                        max_samples=None,
+                        use_chat_template=args.use_chat_template,
+                        system_prompt=args.system_prompt,
+                        cot_prompt=args.cot_prompt,
+                        load_responses_from_details_date_id=None,
+                    )
+                    pipeline = Pipeline(
+                        tasks=task,
+                        pipeline_parameters=pipeline_params,
+                        evaluation_tracker=evaluation_tracker,
+                        model=model,
+                        metric_options={},
+                    )
+                    # Update generation parameters for the current run
+                    model_config.generation_parameters.temperature = temp
+                    model_config.generation_parameters.top_p = top_p
+                    model_config.generation_parameters.seed = seed
+
+                    pipeline.evaluate()
+                    pipeline.show_results()
+                    pipeline.save_and_push_results()
+                    print(f"Finished run for all seeds")
+    
+    print(f"Total execution time: {datetime.now() - start}")
 
 
 if __name__ == "__main__":
