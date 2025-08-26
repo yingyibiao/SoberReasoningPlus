@@ -35,10 +35,10 @@ MAX_TOKENS_LIST=(32768)
 
 TEMPS=(1.0 0.8)
 TOP_PS=(1.0 0.9)
-# Define task-to-seed mappings
-# Format: "task_string:seed1,seed2,seed3"
-TASK_SEEDS_CONFIG=(
-    "custom|aime24|0|0:42,101,2024"  # Run aime24 with 3 specific seeds        # Run gsm8k with 2 different seeds
+# Define how many seeds to run for each task
+# Format: "task_string:num_seeds"
+TASK_NUM_SEEDS_CONFIG=(
+    "custom|aime24|0|0:3"  # Run aime24 with 3 auto-generated seeds
 )
 
 # The outer loops for model configuration remain the same
@@ -54,7 +54,7 @@ set -x
 # MODIFIED: A single call to python passes all the parameter lists.
 python main_diff.py \
     --model $MODEL \
-    --task_seeds "${TASK_SEEDS_CONFIG[@]}" \
+    --task_num_seeds "${TASK_NUM_SEEDS_CONFIG[@]}" \
     --temperature "${TEMPS[@]}" \
     --top_p "${TOP_PS[@]}" \
     --output_dir $OUTPUT_DIR \

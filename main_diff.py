@@ -11,6 +11,7 @@ import argparse
 import logging
 from fsspec import url_to_fs
 import asyncio
+import zlib
 
 __version__ = f"2.0_lighteval@{lighteval.__version__}"
 
@@ -23,7 +24,7 @@ def parse_args():
     # I/O and General Parameters
     parser.add_argument("--output_dir", default="output", type=str, help="Directory to save the output files")
     parser.add_argument("--model", type=str, default="deepseek-ai/DeepSeek-R1-Distill-Qwen-7B")
-    parser.add_argument("--task_seeds", type=str, nargs='+', required=True, help="List of task and seed mappings, e.g., 'task_name:seed1,seed2,seed3'")
+    parser.add_argument("--task_num_seeds", type=str, nargs='+', required=True, help="List of tasks and the number of seeds to run, e.g., 'task_name:3'")
     parser.add_argument("--custom_tasks_directory", type=str, default=None)
     parser.add_argument("--overwrite", action="store_true")
 
@@ -62,15 +63,15 @@ def main():
         print("max_model_length is -1. Setting it to None.")
         max_model_length = None
 
-    # Parse the task_seeds argument
-    tasks_with_seeds = {}
-    for ts in args.task_seeds:
+    # Parse the task_num_seeds argument
+    tasks_with_counts = {}
+    for ts in args.task_num_seeds:
         try:
-            task_name, seeds_str = ts.split(':', 1)
-            seeds = [int(s) for s in seeds_str.split(',')]
-            tasks_with_seeds[task_name] = seeds
+            task_name, num_seeds_str = ts.split(':', 1)
+            num_seeds = int(num_seeds_str)
+            tasks_with_counts[task_name] = num_seeds
         except ValueError:
-            raise ValueError(f"Invalid format for --task_seeds argument: '{ts}'. Expected 'task_name:seed1,seed2,...'")
+            raise ValueError(f"Invalid format for --task_num_seeds argument: '{ts}'. Expected 'task_name:num_seeds'")
 
     # Load the model once
     model_config = VLLMModelConfig(
@@ -94,10 +95,15 @@ def main():
     print(args.temperature.__class__, args.top_p.__class__)
     for temp in args.temperature:
         for top_p in args.top_p:
-            for task, seeds in tasks_with_seeds.items():
-                print(f"Running evaluation for task: {task}, temperature: {temp}, top_p: {top_p}")
-                for seed in seeds:
-                    print(f"\n---> Starting run: seed={seed}")
+            for task, num_seeds in tasks_with_counts.items():
+                print(f"Running evaluation for task: {task}, temperature: {temp}, top_p: {top_p}, num_seeds: {num_seeds}")
+                
+                # Generate a deterministic set of seeds for this task
+                task_hash = zlib.adler32(task.encode("utf-8"))
+                
+                for i in range(num_seeds):
+                    seed = task_hash + i
+                    print(f"\n---> Starting run: seed={seed} ({i+1}/{num_seeds})")
 
                     # Create a meaningful run name based on parameters
                     model_folder_name = f"{args.model.replace('/', '-')}-{args.dtype}-{max_model_length}"
