@@ -11,7 +11,6 @@ import argparse
 import logging
 from fsspec import url_to_fs
 import asyncio
-import zlib
 
 __version__ = f"2.0_lighteval@{lighteval.__version__}"
 
@@ -98,11 +97,8 @@ def main():
             for task, num_seeds in tasks_with_counts.items():
                 print(f"Running evaluation for task: {task}, temperature: {temp}, top_p: {top_p}, num_seeds: {num_seeds}")
                 
-                # Generate a deterministic set of seeds for this task
-                task_hash = zlib.adler32(task.encode("utf-8"))
-                
                 for i in range(num_seeds):
-                    seed = task_hash + i
+                    seed = i
                     print(f"\n---> Starting run: seed={seed} ({i+1}/{num_seeds})")
 
                     # Create a meaningful run name based on parameters
