@@ -1,0 +1,98 @@
+{
+  "config_general": {
+    "lighteval_sha": "47081a5adf93cc2c23ce8cc09e27c51ae752e43f",
+    "num_fewshot_seeds": 1,
+    "max_samples": null,
+    "job_id": 0,
+    "start_time": 6603422.983552054,
+    "end_time": 6604862.461409698,
+    "total_evaluation_time_secondes": "1439.4778576446697",
+    "model_name": "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B",
+    "model_sha": "",
+    "model_dtype": null,
+    "model_size": null,
+    "generation_parameters": {}
+  },
+  "results": {
+    "custom|math_500|0": {
+      "extractive_match": 0.944,
+      "extractive_match_stderr": 0.0102927100298959
+    },
+    "all": {
+      "extractive_match": 0.944,
+      "extractive_match_stderr": 0.0102927100298959
+    }
+  },
+  "versions": {
+    "custom|math_500|0": 1
+  },
+  "config_tasks": {
+    "custom|math_500": {
+      "name": "math_500",
+      "prompt_function": "math_prompt_fn",
+      "hf_repo": "HuggingFaceH4/MATH-500",
+      "hf_subset": "default",
+      "metric": [
+        {
+          "metric_name": "extractive_match",
+          "higher_is_better": true,
+          "category": "3",
+          "use_case": "1",
+          "sample_level_fn": "sample_level_fn",
+          "corpus_level_fn": "mean"
+        }
+      ],
+      "hf_revision": null,
+      "hf_filter": null,
+      "hf_avail_splits": [
+        "test"
+      ],
+      "trust_dataset": false,
+      "evaluation_splits": [
+        "test"
+      ],
+      "few_shots_split": null,
+      "few_shots_select": null,
+      "generation_size": 32768,
+      "generation_grammar": null,
+      "stop_sequence": [],
+      "num_samples": null,
+      "suite": [
+        "custom"
+      ],
+      "original_num_docs": 500,
+      "effective_num_docs": 500,
+      "must_remove_duplicate_docs": false,
+      "version": 1
+    }
+  },
+  "summary_tasks": {
+    "custom|math_500|0": {
+      "hashes": {
+        "hash_examples": "adf0cc8311011db2",
+        "hash_full_prompts": "f4870e37aa777f48",
+        "hash_input_tokens": "7720697f186bae70",
+        "hash_cont_tokens": "acf4a49a0f8cca6c"
+      },
+      "truncated": 0,
+      "non_truncated": 500,
+      "padded": 0,
+      "non_padded": 500,
+      "effective_few_shots": 0.0,
+      "num_truncated_few_shots": 0
+    }
+  },
+  "summary_general": {
+    "hashes": {
+      "hash_examples": "bfaad1993ff37a60",
+      "hash_full_prompts": "9fe73a83e33a9112",
+      "hash_input_tokens": "4e0e26287211c4aa",
+      "hash_cont_tokens": "dce7bd7286ce7b9a"
+    },
+    "truncated": 0,
+    "non_truncated": 500,
+    "padded": 0,
+    "non_padded": 500,
+    "num_truncated_few_shots": 0
+  }
+}
