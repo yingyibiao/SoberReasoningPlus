@@ -1,0 +1,98 @@
+{
+  "config_general": {
+    "lighteval_sha": "47081a5adf93cc2c23ce8cc09e27c51ae752e43f",
+    "num_fewshot_seeds": 1,
+    "max_samples": null,
+    "job_id": 0,
+    "start_time": 8479198.649300637,
+    "end_time": 8479357.474900158,
+    "total_evaluation_time_secondes": "158.82559952139854",
+    "model_name": "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B",
+    "model_sha": "",
+    "model_dtype": null,
+    "model_size": null,
+    "generation_parameters": {}
+  },
+  "results": {
+    "custom|amc23|0": {
+      "extractive_match": 0.925,
+      "extractive_match_stderr": 0.042176369614348695
+    },
+    "all": {
+      "extractive_match": 0.925,
+      "extractive_match_stderr": 0.042176369614348695
+    }
+  },
+  "versions": {
+    "custom|amc23|0": 1
+  },
+  "config_tasks": {
+    "custom|amc23": {
+      "name": "amc23",
+      "prompt_function": "amc_prompt_fn",
+      "hf_repo": "knoveleng/AMC-23",
+      "hf_subset": "default",
+      "metric": [
+        {
+          "metric_name": "extractive_match",
+          "higher_is_better": true,
+          "category": "3",
+          "use_case": "1",
+          "sample_level_fn": "sample_level_fn",
+          "corpus_level_fn": "mean"
+        }
+      ],
+      "hf_revision": null,
+      "hf_filter": null,
+      "hf_avail_splits": [
+        "train"
+      ],
+      "trust_dataset": false,
+      "evaluation_splits": [
+        "train"
+      ],
+      "few_shots_split": null,
+      "few_shots_select": null,
+      "generation_size": 32768,
+      "generation_grammar": null,
+      "stop_sequence": [],
+      "num_samples": null,
+      "suite": [
+        "custom"
+      ],
+      "original_num_docs": 40,
+      "effective_num_docs": 40,
+      "must_remove_duplicate_docs": false,
+      "version": 1
+    }
+  },
+  "summary_tasks": {
+    "custom|amc23|0": {
+      "hashes": {
+        "hash_examples": "57f3ead69f601b6a",
+        "hash_full_prompts": "61e274810a222bd2",
+        "hash_input_tokens": "06c2c4c8c66b98c1",
+        "hash_cont_tokens": "abe936707f06e031"
+      },
+      "truncated": 0,
+      "non_truncated": 40,
+      "padded": 0,
+      "non_padded": 40,
+      "effective_few_shots": 0.0,
+      "num_truncated_few_shots": 0
+    }
+  },
+  "summary_general": {
+    "hashes": {
+      "hash_examples": "fe1f1f4512256bec",
+      "hash_full_prompts": "33b9effde07047d6",
+      "hash_input_tokens": "cbdede04bfe6455d",
+      "hash_cont_tokens": "a2b83235834c347c"
+    },
+    "truncated": 0,
+    "non_truncated": 40,
+    "padded": 0,
+    "non_padded": 40,
+    "num_truncated_few_shots": 0
+  }
+}
