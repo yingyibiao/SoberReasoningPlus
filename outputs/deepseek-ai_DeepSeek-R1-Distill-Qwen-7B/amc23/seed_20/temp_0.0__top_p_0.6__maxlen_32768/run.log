@@ -1,0 +1,172 @@
+---- 2025-08-22T23:24:33+00:00 RUN START ----
++ python /code-fsx/yibiaoy-sandbox/SoberReasoningPlus/main.py --model deepseek-ai/DeepSeek-R1-Distill-Qwen-7B --task 'custom|amc23|0|0' --temperature 0.0 --top_p 0.6 --output_dir /code-fsx/yibiaoy-sandbox/SoberReasoningPlus/outputs --max_new_tokens 32768 --max_model_length 34816 --custom_tasks_directory /code-fsx/yibiaoy-sandbox/SoberReasoningPlus/lighteval_tasks.py --system_prompt 'You are a helpful assistant.' --use_chat_template --dtype bfloat16 --max_num_seqs 256 --max_num_batched_tokens 262144 --tensor_parallel_size 4 --pipeline_parallel_size 1 --data_parallel_size 1 --seed 20
+[I822 23:24:36.875913667 debug.cpp:50] [c10d] The debug level is set to INFO.
+INFO 08-22 23:25:22 [__init__.py:244] Automatically detected platform cuda.
+Using seed: 20
+[I822 23:26:21.885661070 debug.cpp:50] [c10d] The debug level is set to INFO.
+INFO 08-22 23:27:06 [__init__.py:244] Automatically detected platform cuda.
+Traceback (most recent call last):
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/multiprocessing/spawn.py", line 122, in spawn_main
+  File "<string>", line 1, in <module>
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/multiprocessing/spawn.py", line 122, in spawn_main
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/multiprocessing/spawn.py", line 122, in spawn_main
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/multiprocessing/spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/multiprocessing/spawn.py", line 131, in _main
+        exitcode = _main(fd, parent_sentinel)
+exitcode = _main(fd, parent_sentinel)
+                           ^^ ^ ^^ ^    ^^prepare(preparation_data)^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/multiprocessing/spawn.py", line 246, in prepare
+
+^^^^  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/multiprocessing/spawn.py", line 131, in _main
+^^^^^^^
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/multiprocessing/spawn.py", line 131, in _main
+    exitcode = _main(fd, parent_sentinel)
+               ^^^^    ^_fixup_main_from_path(data['init_main_from_path'])^
+^^^^^^^^    ^prepare(preparation_data)^
+^^^^^^^^^^
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/multiprocessing/spawn.py", line 297, in _fixup_main_from_path
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/multiprocessing/spawn.py", line 131, in _main
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/multiprocessing/spawn.py", line 246, in prepare
+    prepare(preparation_data)
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/multiprocessing/spawn.py", line 246, in prepare
+    prepare(preparation_data)
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/multiprocessing/spawn.py", line 246, in prepare
+        main_content = runpy.run_path(main_path,_fixup_main_from_path(data['init_main_from_path'])
+
+                   ^  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/multiprocessing/spawn.py", line 297, in _fixup_main_from_path
+^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen runpy>", line 287, in run_path
+  File "<frozen runpy>", line 98, in _run_module_code
+  File "<frozen runpy>", line 88, in _run_code
+  File "/code-fsx/yibiaoy-sandbox/SoberReasoningPlus/main.py", line 21, in <module>
+    _fixup_main_from_path(data['init_main_from_path'])
+    _fixup_main_from_path(data['init_main_from_path'])
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/multiprocessing/spawn.py", line 297, in _fixup_main_from_path
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/multiprocessing/spawn.py", line 297, in _fixup_main_from_path
+    main_content = runpy.run_path(main_path,
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen runpy>", line 287, in run_path
+  File "<frozen runpy>", line 98, in _run_module_code
+  File "<frozen runpy>", line 88, in _run_code
+    main_content = runpy.run_path(main_path,  File "/code-fsx/yibiaoy-sandbox/SoberReasoningPlus/main.py", line 21, in <module>
+
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen runpy>", line 287, in run_path
+  File "<frozen runpy>", line 98, in _run_module_code
+  File "<frozen runpy>", line 88, in _run_code
+  File "/code-fsx/yibiaoy-sandbox/SoberReasoningPlus/main.py", line 21, in <module>
+    main_content = runpy.run_path(main_path,
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen runpy>", line 287, in run_path
+  File "<frozen runpy>", line 98, in _run_module_code
+  File "<frozen runpy>", line 88, in _run_code
+  File "/code-fsx/yibiaoy-sandbox/SoberReasoningPlus/main.py", line 21, in <module>
+    from lm_eval import evaluator
+ModuleNotFoundError: No module named 'lm_eval'
+    from lm_eval import evaluator
+ModuleNotFoundError: No module named 'lm_eval'
+    from lm_eval import evaluator
+ModuleNotFoundError: No module named 'lm_eval'
+    from lm_eval import evaluator
+ModuleNotFoundError: No module named 'lm_eval'
+EngineCore failed to start.
+Traceback (most recent call last):
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 577, in run_engine_core
+    engine_core = EngineCoreProc(*args, **kwargs)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 404, in __init__
+    super().__init__(vllm_config, executor_class, log_stats,
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 75, in __init__
+    self.model_executor = executor_class(vllm_config)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/vllm/executor/executor_base.py", line 53, in __init__
+    self._init_executor()
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 93, in _init_executor
+    self.workers = WorkerProc.wait_for_ready(unready_workers)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 422, in wait_for_ready
+    raise e from None
+Exception: WorkerProc initialization failed due to an exception in a background process. See stack trace for root cause.
+Process EngineCore_0:
+Traceback (most recent call last):
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+    self.run()
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/multiprocessing/process.py", line 108, in run
+    self._target(*self._args, **self._kwargs)
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 590, in run_engine_core
+    raise e
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 577, in run_engine_core
+    engine_core = EngineCoreProc(*args, **kwargs)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 404, in __init__
+    super().__init__(vllm_config, executor_class, log_stats,
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 75, in __init__
+    self.model_executor = executor_class(vllm_config)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/vllm/executor/executor_base.py", line 53, in __init__
+    self._init_executor()
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 93, in _init_executor
+    self.workers = WorkerProc.wait_for_ready(unready_workers)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 422, in wait_for_ready
+    raise e from None
+Exception: WorkerProc initialization failed due to an exception in a background process. See stack trace for root cause.
+Traceback (most recent call last):
+  File "/code-fsx/yibiaoy-sandbox/SoberReasoningPlus/main.py", line 149, in <module>
+    main()
+  File "/code-fsx/yibiaoy-sandbox/SoberReasoningPlus/main.py", line 135, in main
+    log_samples=False,
+   ^^^^^^^^^^^^^^^^^^^
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/lighteval/pipeline.py", line 156, in __init__
+    self.model = self._init_model(model_config, model)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/lighteval/pipeline.py", line 200, in _init_model
+    return load_model(config=model_config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/lighteval/models/model_loader.py", line 107, in load_model
+    return load_model_with_accelerate_or_default(config)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/lighteval/models/model_loader.py", line 198, in load_model_with_accelerate_or_default
+    model = VLLMModel(config=config)
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/lighteval/models/vllm/vllm_model.py", line 114, in __init__
+    self.model = self._create_auto_model(config)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/lighteval/models/vllm/vllm_model.py", line 184, in _create_auto_model
+    model = LLM(**self.model_args)
+            ^^^^^^^^^^^^^^^^^^^^^^
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/vllm/entrypoints/llm.py", line 271, in __init__
+    self.llm_engine = LLMEngine.from_engine_args(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/vllm/engine/llm_engine.py", line 501, in from_engine_args
+    return engine_cls.from_vllm_config(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/vllm/v1/engine/llm_engine.py", line 124, in from_vllm_config
+    return cls(vllm_config=vllm_config,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/vllm/v1/engine/llm_engine.py", line 101, in __init__
+    self.engine_core = EngineCoreClient.make_client(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 75, in make_client
+    return SyncMPClient(vllm_config, executor_class, log_stats)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 503, in __init__
+    super().__init__(
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 403, in __init__
+    with launch_core_engines(vllm_config, executor_class,
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/contextlib.py", line 144, in __exit__
+    next(self.gen)
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/vllm/v1/engine/utils.py", line 434, in launch_core_engines
+    wait_for_engine_startup(
+  File "/code-fsx/yibiaoy-sandbox/miniconda3/envs/soberplus/lib/python3.12/site-packages/vllm/v1/engine/utils.py", line 484, in wait_for_engine_startup
+    raise RuntimeError("Engine core initialization failed. "
+RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {}
