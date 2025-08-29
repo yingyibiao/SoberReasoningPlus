@@ -1,0 +1,114 @@
+{
+  "config_general": {
+    "lighteval_sha": "?",
+    "num_fewshot_seeds": 1,
+    "max_samples": null,
+    "job_id": 0,
+    "start_time": 2417806.583691632,
+    "end_time": 2418327.548658161,
+    "total_evaluation_time_secondes": "520.964966529049",
+    "model_name": "Qwen/Qwen3-4B",
+    "model_sha": "",
+    "model_dtype": null,
+    "model_size": null,
+    "generation_parameters": {
+      "early_stopping": null,
+      "repetition_penalty": null,
+      "frequency_penalty": null,
+      "length_penalty": null,
+      "presence_penalty": null,
+      "max_new_tokens": 32768,
+      "min_new_tokens": null,
+      "seed": 17,
+      "stop_tokens": null,
+      "temperature": 0.0,
+      "top_k": null,
+      "min_p": null,
+      "top_p": 0.6,
+      "truncate_prompt": null,
+      "response_format": null
+    }
+  },
+  "results": {
+    "custom|amc23|0": {
+      "extractive_match": 0.9,
+      "extractive_match_stderr": 0.048038446141526116
+    },
+    "all": {
+      "extractive_match": 0.9,
+      "extractive_match_stderr": 0.048038446141526116
+    }
+  },
+  "versions": {
+    "custom|amc23|0": 1
+  },
+  "config_tasks": {
+    "custom|amc23": {
+      "name": "amc23",
+      "prompt_function": "amc_prompt_fn",
+      "hf_repo": "knoveleng/AMC-23",
+      "hf_subset": "default",
+      "metric": [
+        {
+          "metric_name": "extractive_match",
+          "higher_is_better": true,
+          "category": "3",
+          "use_case": "1",
+          "sample_level_fn": "sample_level_fn",
+          "corpus_level_fn": "mean"
+        }
+      ],
+      "hf_revision": null,
+      "hf_filter": null,
+      "hf_avail_splits": [
+        "train"
+      ],
+      "trust_dataset": false,
+      "evaluation_splits": [
+        "train"
+      ],
+      "few_shots_split": null,
+      "few_shots_select": null,
+      "generation_size": 32768,
+      "generation_grammar": null,
+      "stop_sequence": [],
+      "num_samples": null,
+      "suite": [
+        "custom"
+      ],
+      "original_num_docs": 40,
+      "effective_num_docs": 40,
+      "must_remove_duplicate_docs": false,
+      "version": 1
+    }
+  },
+  "summary_tasks": {
+    "custom|amc23|0": {
+      "hashes": {
+        "hash_examples": "57f3ead69f601b6a",
+        "hash_full_prompts": "c39d128769a3399b",
+        "hash_input_tokens": "e035992e3c6d69ce",
+        "hash_cont_tokens": "72b381acd3d32236"
+      },
+      "truncated": 0,
+      "non_truncated": 40,
+      "padded": 0,
+      "non_padded": 40,
+      "effective_few_shots": 0.0,
+      "num_truncated_few_shots": 0
+    }
+  },
+  "summary_general": {
+    "hashes": {
+      "hash_examples": "fe1f1f4512256bec",
+      "hash_full_prompts": "3d2dc7e28449c519",
+      "hash_input_tokens": "b244d4b8e5bc9b2d",
+      "hash_cont_tokens": "62c318813e0072c6"
+    },
+    "truncated": 0,
+    "non_truncated": 40,
+    "padded": 0,
+    "non_padded": 40,
+    "num_truncated_few_shots": 0
+  }
+}

@@ -1,0 +1,16 @@
+---- 2025-08-22T23:42:28+00:00 RUN START ----
++ python /code-fsx/yibiaoy-sandbox/SoberReasoningPlus/main.py --model Qwen/Qwen3-4B --task 'custom|amc23|0|0' --temperature 0.0 --top_p 0.6 --output_dir /code-fsx/yibiaoy-sandbox/SoberReasoningPlus/outputs --max_new_tokens 32768 --max_model_length 34816 --custom_tasks_directory /code-fsx/yibiaoy-sandbox/SoberReasoningPlus/lighteval_tasks.py --system_prompt 'You are a helpful assistant.' --use_chat_template --dtype bfloat16 --max_num_seqs 256 --max_num_batched_tokens 262144 --tensor_parallel_size 8 --pipeline_parallel_size 1 --data_parallel_size 1 --seed 25
+[I822 23:42:30.948399913 debug.cpp:50] [c10d] The debug level is set to INFO.
+INFO 08-22 23:43:08 [__init__.py:244] Automatically detected platform cuda.
+usage: main.py [-h] --model MODEL [--dtype DTYPE]
+               [--tensor-parallel-size TENSOR_PARALLEL_SIZE]
+               [--max-model-length MAX_MODEL_LENGTH]
+               [--max-num-batched-tokens MAX_NUM_BATCHED_TOKENS]
+               [--max-num-seqs MAX_NUM_SEQS]
+               [--gpu-memory-utilization GPU_MEMORY_UTILIZATION]
+               [--extra-vllm-args EXTRA_VLLM_ARGS] [--temps TEMPS]
+               [--top-ps TOP_PS] [--seeds SEEDS]
+               [--max-new-tokens MAX_NEW_TOKENS] --tasks TASKS
+               [--batch-size BATCH_SIZE] [--limit-per-task LIMIT_PER_TASK]
+               [--system-prompt SYSTEM_PROMPT] [--output_dir OUTPUT_DIR]
+main.py: error: unrecognized arguments: --temperature 0.0 --top_p 0.6 --max_new_tokens 32768 --max_model_length 34816 --custom_tasks_directory /code-fsx/yibiaoy-sandbox/SoberReasoningPlus/lighteval_tasks.py --system_prompt You are a helpful assistant. --use_chat_template --max_num_seqs 256 --max_num_batched_tokens 262144 --tensor_parallel_size 8 --pipeline_parallel_size 1 --data_parallel_size 1

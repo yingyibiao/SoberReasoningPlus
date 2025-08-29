@@ -1,0 +1,17 @@
+{
+  "model": "Qwen/Qwen3-8B",
+  "task": "custom|amc23|0|0",
+  "temperature": 0.0,
+  "top_p": 0.6,
+  "output_dir": "/code-fsx/yibiaoy-sandbox/SoberReasoningPlus/outputs",
+  "max_new_tokens": 32768,
+  "max_model_length": 34816,
+  "dtype": "bfloat16",
+  "max_num_seqs": 256,
+  "max_num_batched_tokens": 262144,
+  "tp": 8,
+  "pp": 1,
+  "dp": 1,
+  "seed": 11,
+  "system_prompt": "You are a helpful assistant."
+}
