@@ -7,7 +7,6 @@ export NCCL_DEBUG=WARN
 export OMP_NUM_THREADS=8
 export VLLM_WORKER_MULTIPROC_METHOD=spawn
 export HF_HOME="/checkpoints-fsx/yibiaoy-sandbox/HF"
-export CUDA_VISIBLE_DEVICES="0,1,2,3"
 
 unset VLLM_ATTENTION_BACKEND
 
@@ -22,13 +21,14 @@ export MATH_QUERY_TEMPLATE="Solve the following math problem efficiently and cle
 "
 
 MODELS=(
-    Qwen/Qwen3-1.7B
+    "deepseek-ai/DeepSeek-R1-Distill-Qwen-14B"
 )
 
-DTYPES=("bfloat16")
+DTYPES=("float32")
+export VLLM_ATTENTION_BACKEND=XFORMERS
 
-MAX_NUM_SEQUENCES=(128)
-MAX_NUM_BATCHED_TOKENS=(131072)
+MAX_NUM_SEQUENCES=(64)
+MAX_NUM_BATCHED_TOKENS=(65536)
 
 MAX_MODEL_LENGTHS=(34816)
 MAX_TOKENS_LIST=(32768)
@@ -71,7 +71,7 @@ python main_diff.py \
     --dtype $DTYPE \
     --max_num_seqs $MAX_NUM_SEQUENCES \
     --max_num_batched_tokens $MAX_NUM_BATCHED_TOKENS \
-    --tensor_parallel_size 4 \
+    --tensor_parallel_size 8 \
     --pipeline_parallel_size 1 \
     --data_parallel_size 1
 
@@ -92,7 +92,7 @@ if [ ${#TEMPS_NON_ZERO[@]} -gt 0 ]; then
         --dtype $DTYPE \
         --max_num_seqs $MAX_NUM_SEQUENCES \
         --max_num_batched_tokens $MAX_NUM_BATCHED_TOKENS \
-        --tensor_parallel_size 4 \
+        --tensor_parallel_size 8 \
         --pipeline_parallel_size 1 \
         --data_parallel_size 1
 fi
